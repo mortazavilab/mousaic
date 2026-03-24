@@ -39,12 +39,12 @@ streamlit run app.py
 
 Open the URL shown (e.g. http://localhost:8501).
 
-## Run with Docker
+## Run with Docker (GHCR)
 
-Build image:
+Pull image:
 
 ```bash
-docker build -t cistrans-viewer .
+docker pull ghcr.io/rlweber23/mousaic:latest
 ```
 
 Run container (mount local data into `/app`):
@@ -53,15 +53,37 @@ Run container (mount local data into `/app`):
 docker run --rm -p 8501:8501 \
   -v "$PWD/cis_trans_results_table.csv:/app/cis_trans_results_table.csv" \
   -v "$PWD/gene_count_data:/app/gene_count_data" \
-  cistrans-viewer
+  ghcr.io/rlweber23/mousaic:latest
 ```
 
-Then open http://localhost:8501.
+If port 8501 is already in use, map a different host port:
+
+```bash
+docker run --rm -p 8502:8501 \
+  -v "$PWD/cis_trans_results_table.csv:/app/cis_trans_results_table.csv" \
+  -v "$PWD/gene_count_data:/app/gene_count_data" \
+  ghcr.io/rlweber23/mousaic:latest
+```
+
+Then open http://localhost:8501 (or http://localhost:8502 if using the alternate port mapping).
 
 Notes:
 
-- The Docker image excludes large data files by default via `.dockerignore`.
-- The run command above mounts your local data so app paths stay unchanged.
+- Data files are not baked into the image; mount `cis_trans_results_table.csv` and `gene_count_data/` at runtime.
+- The app expects data at `/app/cis_trans_results_table.csv` and `/app/gene_count_data/`.
+
+### Optional: Build Locally
+
+```bash
+docker build -t cistrans-viewer .
+```
+
+```bash
+docker run --rm -p 8501:8501 \
+  -v "$PWD/cis_trans_results_table.csv:/app/cis_trans_results_table.csv" \
+  -v "$PWD/gene_count_data:/app/gene_count_data" \
+  cistrans-viewer
+```
 
 ## Views
 
