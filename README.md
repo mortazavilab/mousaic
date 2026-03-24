@@ -44,8 +44,9 @@ Open the URL shown (e.g. http://localhost:8501).
 Pull image:
 
 ```bash
-docker pull ghcr.io/rlweber23/mousaic:latest
+docker pull ghcr.io/mortazavilab/mousaic:latest
 ```
+
 
 Run container (mount local data into `/app`):
 
