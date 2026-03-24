@@ -1,0 +1,42 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Test and type-check caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Coverage outputs
+.coverage
+.coverage.*
+htmlcov/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Streamlit and notebook artifacts
+.streamlit/secrets.toml
+.ipynb_checkpoints/
+
+# IDE/editor settings
+.vscode/
+.idea/
+
+# macOS / system files
+.DS_Store
+
+# Logs
+*.log
+
+# Optional: uncomment if you later want code-only Git history
+cis_trans_results_table.csv
+gene_count_data/
