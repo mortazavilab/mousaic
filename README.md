@@ -39,6 +39,30 @@ streamlit run app.py
 
 Open the URL shown (e.g. http://localhost:8501).
 
+## Run with Docker
+
+Build image:
+
+```bash
+docker build -t cistrans-viewer .
+```
+
+Run container (mount local data into `/app`):
+
+```bash
+docker run --rm -p 8501:8501 \
+  -v "$PWD/cis_trans_results_table.csv:/app/cis_trans_results_table.csv" \
+  -v "$PWD/gene_count_data:/app/gene_count_data" \
+  cistrans-viewer
+```
+
+Then open http://localhost:8501.
+
+Notes:
+
+- The Docker image excludes large data files by default via `.dockerignore`.
+- The run command above mounts your local data so app paths stay unchanged.
+
 ## Views
 
 - **Cell type view:** Select tissue(s) and cell type; scatter (cis_prop vs Parlog2FC) + stacked reg_assignment bar per strain.

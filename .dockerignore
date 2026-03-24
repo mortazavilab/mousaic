@@ -1,0 +1,54 @@
+# VCS
+.git
+.gitignore
+
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local environments and editor files
+.venv/
+venv/
+env/
+.vscode/
+.idea/
+
+# OS clutter
+.DS_Store
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+# Coverage and temporary artifacts
+.coverage
+.coverage.*
+htmlcov/
+*.log
+*.tmp
+*.swp
+*.swo
+*~
+
+# Notebook artifacts
+.ipynb_checkpoints/
+
+# Local environment files
+.env
+.env.local
+
+# Streamlit local secrets
+.streamlit/secrets.toml
+
+# Keep container image small; mount data at runtime instead
+cis_trans_results_table.csv
+gene_count_data/
