@@ -40,3 +40,7 @@ dist/
 # Optional: uncomment if you later want code-only Git history
 cis_trans_results_table.csv
 gene_count_data/
+
+cis_trans_results_table.csv
+gene_count_data/
+*.tar.gz
