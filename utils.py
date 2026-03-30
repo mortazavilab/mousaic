@@ -1066,6 +1066,7 @@ def load_adata(tissue: str, strain: str, _base_path: str = BASE_PATH) -> Optiona
     if not os.path.isfile(data_path) or not os.path.isfile(meta_path):
         return None
     counts = pd.read_csv(data_path, index_col=0)
+    counts = counts.apply(pd.to_numeric, errors="coerce").fillna(0.0)
     meta = pd.read_csv(meta_path, index_col=0)
     common = counts.index.intersection(meta.index)
     if len(common) == 0:
@@ -1315,6 +1316,12 @@ def plot_gene_boxplot_for_strain(
     except Exception as e:
         logging.error(f"[{strain}] Failed to extract expression for gene '{gene}': {e}")
         return None
+
+    sub["_expr"] = pd.to_numeric(sub["_expr"], errors="coerce")
+    sub = sub[np.isfinite(sub["_expr"])].copy()
+    if sub.empty:
+        logging.warning(f"[{strain}] No finite expression values for gene '{gene}' in subtype '{subtype}'")
+        return None
     
     sub = sub[sub["Allele"].isin(ALLELE_ORDER)]
     if sub.empty:
@@ -1473,14 +1480,23 @@ def plot_gene_across_strains(
                 ax.axis("off")
             else:
                 reg_assignment = strain_reg["reg_assignment"].iloc[0]
-                plot_gene_boxplot_for_strain(
+                result = plot_gene_boxplot_for_strain(
                     adata, gene, subtype, strain,
                     ax=ax,
                     layer=layer, show_points=show_points, point_size=point_size, jitter=jitter,
                     y_scale="linear", y_min=0.0, downsample_per_allele=None,
                     reg_assignment=reg_assignment,
                 )
-                has_data = True
+                if result is None:
+                    ax.text(0.5, 0.5, f"{strain}\nnot detected", ha="center", va="center", fontsize=10)
+                    ax.set_xlim(0, 1)
+                    ax.set_ylim(0, 1)
+                    ax.axis("off")
+                    warnings.append(
+                        f"No plottable expression values for {strain} ({gene}, {subtype})."
+                    )
+                else:
+                    has_data = True
     
     # Hide unused subplots (if fewer than 7 strains available)
     for idx in range(len(strains_to_plot), len(all_axes)):
