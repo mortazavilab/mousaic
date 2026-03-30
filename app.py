@@ -787,7 +787,7 @@ def main():
     st.set_page_config(page_title="cis/trans regulatory inference explorer", layout="wide")
     init_session_state()
 
-    with st.spinner("Checking required input data..."):
+    with st.spinner("Checking required input data. This may take a moment..."):
         bootstrap_result = ensure_data_ready()
     if bootstrap_result.error:
         st.error(textwrap.dedent(f"""
