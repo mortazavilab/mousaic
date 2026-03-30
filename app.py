@@ -2,6 +2,7 @@
 Cis/trans regulatory inference explorer + Gene expression (allele/genotype) viewer.
 """
 import io
+import os
 import textwrap
 import matplotlib.pyplot as plt
 import logging
@@ -53,7 +54,12 @@ PAGES = [
 
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+log_level = os.getenv("LOG_LEVEL", "WARNING").upper()
+logging.basicConfig(
+    level=getattr(logging, log_level, logging.WARNING),
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    force=True,
+)
 
 
 def init_session_state() -> None:
