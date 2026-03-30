@@ -1,7 +1,7 @@
-streamlit>=1.45.1
-pandas>=2.1.1
-numpy>=1.26.0
-plotly>=5.22.0
-matplotlib>=3.8.0
-anndata>=0.10.0
-streamlit-plotly-events>=0.0.6
+streamlit==1.45.1
+pandas==2.1.1
+numpy==1.26.0
+plotly==5.22.0
+matplotlib==3.8.0
+anndata==0.10.0
+streamlit-plotly-events==0.0.6
