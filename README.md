@@ -4,6 +4,45 @@ Streamlit dashboard for exploring cis/trans regulatory inference results and gen
 
 ## Data
 
+### Download required input data
+
+This app requires two input artifacts from Zenodo:
+
+1. `cis_trans_results_table.csv`
+   - https://zenodo.org/records/19340139/files/cis_trans_results_table.csv
+2. `gene_count_data.tar.gz`
+   - https://zenodo.org/records/19340139/files/gene_count_data.tar.gz
+
+From the project root, download both files:
+
+```bash
+curl -L -o cis_trans_results_table.csv \
+  https://zenodo.org/records/19340139/files/cis_trans_results_table.csv
+
+curl -L -o gene_count_data.tar.gz \
+  https://zenodo.org/records/19340139/files/gene_count_data.tar.gz
+```
+
+Extract the gene count archive in the project root:
+
+```bash
+tar -xzf gene_count_data.tar.gz
+```
+
+After extraction, your top-level layout should include:
+
+```text
+cistrans_paper_viewer/
+  app.py
+  utils.py
+  cis_trans_results_table.csv
+  gene_count_data/
+    subtype/
+      <tissue>/
+        <strain>_xgener_input_dataframe_FILTERED.csv
+        <strain>_xgener_input_metadata_FILTERED.csv
+```
+
 ### Cis/trans results
 
 - **File:** `cis_trans_results_table.csv` in the project root.
@@ -13,12 +52,12 @@ Streamlit dashboard for exploring cis/trans regulatory inference results and gen
 
 The **Gene expression** view uses a separate directory of per-tissue, per-strain count matrices and metadata:
 
-**Base path:** `gene_count_data/subtype/filtered`
+**Base path:** `gene_count_data/subtype`
 
 **Layout:**
 
 ```
-gene_count_data/subtype/filtered/
+gene_count_data/subtype/
   <tissue>/
     <strain>_xgener_input_dataframe_FILTERED.csv   # cells × genes (index column "Unnamed: 0" or first column)
     <strain>_xgener_input_metadata_FILTERED.csv   # cells × obs (index aligned with counts)
@@ -28,7 +67,7 @@ gene_count_data/subtype/filtered/
 - **Metadata:** must include `subtype` (cell type) and `Allele` (values in `P1`, `P2`, `H1`, `H2`).
 - **Plot:** For a chosen gene, tissue, and cell type, the app loads each strain’s AnnData (counts + metadata), filters to that subtype, and draws one panel per strain with boxplots by allele (P1, H1, H2, P2). Colors are strain-specific (P1/H1 = B6J, P2/H2 = founder for that strain). Only strains present in the selected tissue directory are shown.
 
-If your files use different suffixes (e.g. `_xgener_input_dataframe.csv` without `_FILTERED`), set `BASE_PATH`, `DATA_SUFFIX`, and `META_SUFFIX` in `utils.py` to match.
+The Zenodo `gene_count_data.tar.gz` files use `_FILTERED` suffixes. If your local `utils.py` uses different values for `BASE_PATH`, `DATA_SUFFIX`, or `META_SUFFIX`, update those constants to match your extracted file names.
 
 ## Run
 
