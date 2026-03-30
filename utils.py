@@ -1392,7 +1392,8 @@ def plot_gene_across_strains(
     import matplotlib.gridspec as gridspec
     
     # Load results table to check for gene-tissue-subtype combinations
-    results_df = load_results_table("cis_trans_results_table.csv")
+    results_path = os.path.join(DATA_ROOT, "cis_trans_results_table.csv")
+    results_df = load_results_table(results_path)
     
     # Check if gene-tissue-subtype combination exists in results
     gene_in_results = results_df[

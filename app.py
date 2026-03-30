@@ -703,7 +703,7 @@ def page_gene_expression():
                 st.download_button("📥 Download figure (PNG)", data=buf, file_name=f"gene_expression_{tissue}_{subtype}_{gene}.png", mime="image/png", key="ge_download")
                 plt.close(fig)
         except Exception as e:
-            st.error("An error occurred while generating the plot.")
+            st.error(f"An error occurred while generating the plot: {e}")
             logging.error(f"An error occurred while generating the plot: {e}")
 
     st.markdown("---")
