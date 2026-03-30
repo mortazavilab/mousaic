@@ -97,7 +97,7 @@ Run container (auto-downloads data on first startup):
 docker run --rm -p 8501:8501 \
   -e DATA_ROOT=/app/data \
   -v cistrans_data:/app/data \
-  ghcr.io/rlweber23/mousaic:latest
+  ghcr.io/mortazavilab/mousaic:latest
 ```
 
 If port 8501 is already in use, map a different host port:
@@ -106,7 +106,7 @@ If port 8501 is already in use, map a different host port:
 docker run --rm -p 8502:8501 \
   -e DATA_ROOT=/app/data \
   -v cistrans_data:/app/data \
-  ghcr.io/rlweber23/mousaic:latest
+  ghcr.io/mortazavilab/mousaic:latest
 ```
 
 Then open http://localhost:8501 (or http://localhost:8502 if using the alternate port mapping).
@@ -124,7 +124,7 @@ Optional: persist data in a host directory instead of a named volume.
 docker run --rm -p 8501:8501 \
   -e DATA_ROOT=/app/data \
   -v "$PWD/data:/app/data" \
-  ghcr.io/rlweber23/mousaic:latest
+  ghcr.io/mortazavilab/mousaic:latest
 ```
 
 ### Optional: Build Locally
