@@ -10,6 +10,7 @@ import pandas as pd
 
 import streamlit as st
 from streamlit_plotly_events import plotly_events
+from data_bootstrap import ensure_data_ready, get_data_root
 
 from utils import (
     BASE_PATH,
@@ -40,7 +41,7 @@ from utils import (
     STRAINS_DISPLAY_ORDER,
 )
 
-DATA_PATH = "cis_trans_results_table.csv"
+DATA_PATH = str(get_data_root() / "cis_trans_results_table.csv")
 PAGES = [
     "Home",
     "Cell type view",
@@ -780,12 +781,27 @@ def main():
     st.set_page_config(page_title="cis/trans regulatory inference explorer", layout="wide")
     init_session_state()
 
+    with st.spinner("Checking required input data..."):
+        bootstrap_result = ensure_data_ready()
+    if bootstrap_result.error:
+        st.error(textwrap.dedent(f"""
+            Failed to prepare required input data.
+            Reason: {bootstrap_result.error}
+
+            Check network access and verify data source URLs in `data_sources.txt`.
+            You can also set `DATA_ROOT` to a writable directory and retry.
+        """))
+        return
+    if bootstrap_result.downloaded:
+        downloaded_items = ", ".join(bootstrap_result.downloaded)
+        st.info(f"First-run data setup completed. Downloaded: {downloaded_items}")
+
     try:
         df = load_results_table(DATA_PATH)
     except FileNotFoundError:
         st.error(textwrap.dedent("""
-            Could not find `cis_trans_results_table.csv` in the project root.
-            Please place the file alongside `app.py` and refresh.
+            Could not find `cis_trans_results_table.csv` after startup data checks.
+            Verify that `DATA_ROOT` points to a readable data directory and refresh.
         """))
         return
     if df.empty:

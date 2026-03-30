@@ -4,37 +4,29 @@ Streamlit dashboard for exploring cis/trans regulatory inference results and gen
 
 ## Data
 
-### Download required input data
+### Automatic first-run download
 
-This app requires two input artifacts from Zenodo:
+On startup, the app checks for required input data and auto-downloads missing artifacts from Zenodo:
 
 1. `cis_trans_results_table.csv`
-   - https://zenodo.org/records/19340139/files/cis_trans_results_table.csv
-2. `gene_count_data.tar.gz`
-   - https://zenodo.org/records/19340139/files/gene_count_data.tar.gz
+2. `gene_count_data.tar.gz` (automatically extracted to `gene_count_data/`)
 
-From the project root, download both files:
+The source URLs are stored in `data_sources.txt`:
 
-```bash
-curl -L -o cis_trans_results_table.csv \
-  https://zenodo.org/records/19340139/files/cis_trans_results_table.csv
+- https://zenodo.org/records/19340139/files/cis_trans_results_table.csv
+- https://zenodo.org/records/19340139/files/gene_count_data.tar.gz
 
-curl -L -o gene_count_data.tar.gz \
-  https://zenodo.org/records/19340139/files/gene_count_data.tar.gz
-```
+This bootstrap step is idempotent:
 
-Extract the gene count archive in the project root:
+- First run: downloads missing files and extracts `gene_count_data/`.
+- Later runs: skips download/extract when data already exists.
 
-```bash
-tar -xzf gene_count_data.tar.gz
-```
+By default, data is stored under the project root. You can override this with `DATA_ROOT`.
 
-After extraction, your top-level layout should include:
+Expected layout under your data root:
 
 ```text
-cistrans_paper_viewer/
-  app.py
-  utils.py
+cistrans_paper_viewer/  (or DATA_ROOT if overridden)
   cis_trans_results_table.csv
   gene_count_data/
     subtype/
@@ -45,7 +37,7 @@ cistrans_paper_viewer/
 
 ### Cis/trans results
 
-- **File:** `cis_trans_results_table.csv` in the project root.
+- **File:** `cis_trans_results_table.csv` in the data root.
 - **Key columns:** `gene`, `strain`, `subtype`, `tissue`, `subtype_tis`, `Parlog2FC`, `Hyblog2FC`, `fdr_cis`, `fdr_trans`, `reg_assignment`, `cis_prop_reordered` / `cis_prop_reordered_fixed`, optional `colors`.
 
 ### Gene expression (allele/genotype) viewer
@@ -67,13 +59,19 @@ gene_count_data/subtype/
 - **Metadata:** must include `subtype` (cell type) and `Allele` (values in `P1`, `P2`, `H1`, `H2`).
 - **Plot:** For a chosen gene, tissue, and cell type, the app loads each strain’s AnnData (counts + metadata), filters to that subtype, and draws one panel per strain with boxplots by allele (P1, H1, H2, P2). Colors are strain-specific (P1/H1 = B6J, P2/H2 = founder for that strain). Only strains present in the selected tissue directory are shown.
 
-The Zenodo `gene_count_data.tar.gz` files use `_FILTERED` suffixes. If your local `utils.py` uses different values for `BASE_PATH`, `DATA_SUFFIX`, or `META_SUFFIX`, update those constants to match your extracted file names.
+The Zenodo `gene_count_data.tar.gz` files use `_FILTERED` suffixes by default in this app configuration. If you use custom files, update `BASE_PATH`, `DATA_SUFFIX`, and `META_SUFFIX` in `utils.py` to match.
 
 ## Run
 
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
+```
+
+Optional: store downloaded data outside the project root.
+
+```bash
+DATA_ROOT=./data streamlit run app.py
 ```
 
 Open the URL shown (e.g. http://localhost:8501).
@@ -87,12 +85,18 @@ docker pull ghcr.io/mortazavilab/mousaic:latest
 ```
 
 
-Run container (mount local data into `/app`):
+Create a named volume for persistent data (one-time):
+
+```bash
+docker volume create cistrans_data
+```
+
+Run container (auto-downloads data on first startup):
 
 ```bash
 docker run --rm -p 8501:8501 \
-  -v "$PWD/cis_trans_results_table.csv:/app/cis_trans_results_table.csv" \
-  -v "$PWD/gene_count_data:/app/gene_count_data" \
+  -e DATA_ROOT=/app/data \
+  -v cistrans_data:/app/data \
   ghcr.io/rlweber23/mousaic:latest
 ```
 
@@ -100,8 +104,8 @@ If port 8501 is already in use, map a different host port:
 
 ```bash
 docker run --rm -p 8502:8501 \
-  -v "$PWD/cis_trans_results_table.csv:/app/cis_trans_results_table.csv" \
-  -v "$PWD/gene_count_data:/app/gene_count_data" \
+  -e DATA_ROOT=/app/data \
+  -v cistrans_data:/app/data \
   ghcr.io/rlweber23/mousaic:latest
 ```
 
@@ -109,8 +113,19 @@ Then open http://localhost:8501 (or http://localhost:8502 if using the alternate
 
 Notes:
 
-- Data files are not baked into the image; mount `cis_trans_results_table.csv` and `gene_count_data/` at runtime.
-- The app expects data at `/app/cis_trans_results_table.csv` and `/app/gene_count_data/`.
+- Data files are not baked into the image.
+- On first startup, the container downloads and extracts data into `/app/data`.
+- On subsequent startups with the same `cistrans_data` volume, download/extract is skipped.
+- If startup download fails (network or URL issue), the app shows an error and exits cleanly.
+
+Optional: persist data in a host directory instead of a named volume.
+
+```bash
+docker run --rm -p 8501:8501 \
+  -e DATA_ROOT=/app/data \
+  -v "$PWD/data:/app/data" \
+  ghcr.io/rlweber23/mousaic:latest
+```
 
 ### Optional: Build Locally
 
@@ -120,8 +135,8 @@ docker build -t cistrans-viewer .
 
 ```bash
 docker run --rm -p 8501:8501 \
-  -v "$PWD/cis_trans_results_table.csv:/app/cis_trans_results_table.csv" \
-  -v "$PWD/gene_count_data:/app/gene_count_data" \
+  -e DATA_ROOT=/app/data \
+  -v cistrans_data:/app/data \
   cistrans-viewer
 ```
 

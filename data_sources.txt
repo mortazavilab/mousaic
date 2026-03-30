@@ -1,0 +1,4 @@
+# Required data artifacts for first-run bootstrap
+# Format: <artifact_name>|<url>
+cis_trans_results_table.csv|https://zenodo.org/records/19340139/files/cis_trans_results_table.csv
+gene_count_data.tar.gz|https://zenodo.org/records/19340139/files/gene_count_data.tar.gz

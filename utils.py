@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+from data_bootstrap import get_data_root
 from matplotlib.patches import Rectangle
 
 # ---------------------------------------------------------------------------
@@ -37,9 +38,10 @@ TISSUE_COMPOSITION_COLORS: Dict[str, str] = {
 # ---------------------------------------------------------------------------
 # Gene expression viewer constants
 # ---------------------------------------------------------------------------
-BASE_PATH = "gene_count_data/subtype"
-DATA_SUFFIX = "_xgener_input_dataframe.csv"
-META_SUFFIX = "_xgener_input_metadata.csv"
+DATA_ROOT = str(get_data_root())
+BASE_PATH = os.path.join(DATA_ROOT, "gene_count_data", "subtype")
+DATA_SUFFIX = "_xgener_input_dataframe_FILTERED.csv"
+META_SUFFIX = "_xgener_input_metadata_FILTERED.csv"
 
 STRAINS_DISPLAY_ORDER = [
     "A_J",
