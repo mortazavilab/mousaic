@@ -117,7 +117,7 @@ On startup, the app checks for required input data and auto-downloads missing ar
 
 The source URLs are stored in `data_sources.txt`:
 
-- https://zenodo.org/records/19340139/files/cis_trans_results_table.csv
+- https://zenodo.org/records/20618470/files/cis_trans_results_table.csv
 - https://zenodo.org/records/19340139/files/gene_count_data.tar.gz
 
 This bootstrap step is idempotent:
